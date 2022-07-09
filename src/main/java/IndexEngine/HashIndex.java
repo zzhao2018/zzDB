@@ -49,7 +49,7 @@ public class HashIndex {
     private void setToFile(String line) {
         // 大于阈值，写入文件，否则写入cache
         cache.add(line);
-        if (cache.size() > ConfigLoader.CACHE_SIZE) {
+        if (cache.size() > ConfigLoader.getInstance().getCacheSize()) {
             try {
                 this.lock.writeLock().lock();
                 toFile.writeToFile(cache);

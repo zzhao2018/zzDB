@@ -16,7 +16,8 @@ public class ToFile {
 
     public ToFile() throws IOException {
         writer = Files.newBufferedWriter(
-                Paths.get(ConfigLoader.DATA_FILE_PATH), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE
+                Paths.get(ConfigLoader.getInstance().getDataFilePath()),
+                StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE
         );
     }
 
@@ -33,7 +34,7 @@ public class ToFile {
     public List<String> readFromFile() {
         List<String> lines = new ArrayList<>();
         try {
-            File file = new File(ConfigLoader.DATA_FILE_PATH);
+            File file = new File(ConfigLoader.getInstance().getDataFilePath());
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
