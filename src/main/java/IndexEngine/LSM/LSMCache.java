@@ -15,7 +15,7 @@ public class LSMCache {
     private Logger logger = Logger.getLogger(LSMCache.class);
 
     private TreeMap<String, Long> activeMemtable = new TreeMap<>();
-    private Queue<TreeMap<String, Long>> immuMemtables = new LinkedList<>();
+    private LinkedList<TreeMap<String, Long>> immuMemtables = new LinkedList<>();
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private long cnt = 0;
 
@@ -26,7 +26,7 @@ public class LSMCache {
             activeMemtable.put(key, offset);
             cnt++;
             if (cnt >= ConfigLoader.getInstance().getCacheSize()) {
-                immuMemtables.add(activeMemtable);
+                immuMemtables.offer(activeMemtable);
                 activeMemtable = new TreeMap<>();
                 cnt = 0;
             }
@@ -35,6 +35,22 @@ public class LSMCache {
         } finally {
             lock.writeLock().unlock();
         }
+    }
+
+    // 查cache流程
+    public Long getKeyOffset(String key) {
+        Long offset = this.activeMemtable.get(key);
+        if (offset != null) {
+            return offset;
+        }
+        int tableCnt = this.immuMemtables.size();
+        for (int index = tableCnt - 1; index >= 0; index--) {
+            Long val = this.immuMemtables.get(index).get(key);
+            if (val != null) {
+                return val;
+            }
+        }
+        return null;
     }
 
     // 线程不安全

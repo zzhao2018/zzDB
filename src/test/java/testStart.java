@@ -19,10 +19,12 @@ public class testStart {
         lsmCache.insertCache("key3", 3l);
         lsmCache.insertCache("key4", 4l);
         lsmCache.insertCache("key5", 5l);
-        System.out.println(lsmCache.getActiveCache());
-        while (lsmCache.immuCacheNum() > 0) {
-            System.out.println(lsmCache.getCache());
-        }
+        lsmCache.insertCache("key2", 6l);
+        lsmCache.insertCache("key7", 7l);
+        lsmCache.insertCache("key8", 8l);
+        lsmCache.insertCache("key9", 9l);
+
+        System.out.println(lsmCache.getKeyOffset("key7"));
     }
 
     @Test

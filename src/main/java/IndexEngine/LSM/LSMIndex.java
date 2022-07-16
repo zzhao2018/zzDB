@@ -46,8 +46,9 @@ public class LSMIndex {
         // 更新索引
         logger.debug(String.format("get key:%s, offset:%d", k, lineOffset));
         cache.insertCache(k, lineOffset);
-
     }
+
+
 
     public void printf() {
         System.out.println(this.cache.getActiveCache());
