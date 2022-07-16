@@ -14,11 +14,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ToFile {
     BufferedWriter writer;
 
-    public ToFile() throws IOException {
+    public ToFile(String path) throws IOException {
         writer = Files.newBufferedWriter(
-                Paths.get(ConfigLoader.getInstance().getDataFilePath()),
+                Paths.get(path),
                 StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE
         );
+    }
+
+    public void writeToFile(String line) {
+        try {
+            writer.write(line);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void writeToFile(ConcurrentLinkedQueue<String> lines) {

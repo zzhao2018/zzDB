@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class testStart {
     @Test
-    public void firstTest() throws IOException {
+    public void testCache() throws IOException {
         LSMCache lsmCache = new LSMCache();
         lsmCache.insertCache("key1", 1l);
         lsmCache.insertCache("key2", 2l);
@@ -23,6 +23,17 @@ public class testStart {
         while (lsmCache.immuCacheNum() > 0) {
             System.out.println(lsmCache.getCache());
         }
+    }
+
+    @Test
+    public void testLSMIndex() throws IOException {
+        LSMIndex lsmIndex = new LSMIndex();
+        lsmIndex.set("name", "zzh");
+        lsmIndex.set("age", "12");
+        lsmIndex.set("addr", "earth");
+        lsmIndex.set("city", "sum");
+        lsmIndex.set("sex", "man");
+        lsmIndex.printf();
     }
 }
 

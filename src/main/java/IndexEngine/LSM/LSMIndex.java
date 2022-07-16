@@ -16,11 +16,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LSMIndex {
     private ConcurrentHashMap<String, Long> kv = new ConcurrentHashMap<>();
-    private ToFile wal = new ToFile();                          // 预写式日志
+    private ToFile wal = new ToFile(ConfigLoader.getInstance().getDataFilePath());                          // 预写式日志
     private LSMCache cache = new LSMCache();                    // 缓存
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Logger logger = Logger.getLogger(LSMCache.class);
-    private long length = 0;
+    private long offset = 0;
 
 
     public LSMIndex() throws IOException {
@@ -28,24 +28,33 @@ public class LSMIndex {
 
     public void set(String k, String v) {
         String line = k + "\u0000" + v;
+        long lineOffset;
         // 更新预写日志
         try {
             lock.writeLock().lock();
-
+            int lineLen = line.length() + 11;
+            line = String.format("%10d%s", lineLen, line);
+            wal.writeToFile(line);
+            lineOffset = offset;
+            offset = offset + lineLen;
         } catch (Exception e) {
             logger.error("LSMIndex set error, err: " + e.getMessage());
             throw new RuntimeException(e);
         } finally {
             lock.writeLock().unlock();
         }
-        long offset = 0;
         // 更新索引
-        cache.insertCache(k, offset);
+        logger.debug(String.format("get key:%s, offset:%d", k, lineOffset));
+        cache.insertCache(k, lineOffset);
 
     }
 
-    // 更新索引
-    private void renewIndex(String k, String line) {
-
+    public void printf() {
+        System.out.println(this.cache.getActiveCache());
+        int times = 0;
+        while (times < this.cache.immuCacheNum()) {
+            System.out.println(this.cache.getCache());
+            times++;
+        }
     }
 }
