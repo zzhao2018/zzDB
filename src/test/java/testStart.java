@@ -14,17 +14,21 @@ public class testStart {
     @Test
     public void testCache() throws IOException {
         LSMCache lsmCache = new LSMCache();
-        lsmCache.insertCache("key1", 1l);
-        lsmCache.insertCache("key2", 2l);
-        lsmCache.insertCache("key3", 3l);
-        lsmCache.insertCache("key4", 4l);
-        lsmCache.insertCache("key5", 5l);
-        lsmCache.insertCache("key2", 6l);
-        lsmCache.insertCache("key7", 7l);
-        lsmCache.insertCache("key8", 8l);
-        lsmCache.insertCache("key9", 9l);
+        lsmCache.insertCache("key1", "val1");
+        lsmCache.insertCache("key2", "val2");
+        lsmCache.insertCache("key3", "val3");
+        lsmCache.insertCache("key4", "val4");
+        lsmCache.insertCache("key5", "val5");
+        lsmCache.insertCache("key2", "val6");
+        lsmCache.insertCache("key7", "val7");
+        lsmCache.insertCache("key8", "val8");
+        lsmCache.insertCache("key9", "val9");
 
-        System.out.println(lsmCache.getKeyOffset("key7"));
+        System.out.println(lsmCache.getVal("key1"));
+        System.out.println(lsmCache.getVal("key2"));
+        System.out.println(lsmCache.getVal("key4"));
+        System.out.println(lsmCache.getVal("key8"));
+        System.out.println(lsmCache.getVal("key9"));
     }
 
     @Test
@@ -35,7 +39,11 @@ public class testStart {
         lsmIndex.set("addr", "earth");
         lsmIndex.set("city", "sum");
         lsmIndex.set("sex", "man");
-        lsmIndex.printf();
+        System.out.println(lsmIndex.get("name"));
+        System.out.println(lsmIndex.get("age"));
+        System.out.println(lsmIndex.get("day"));
+        System.out.println(lsmIndex.get("city"));
+
     }
 }
 

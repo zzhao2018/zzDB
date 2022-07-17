@@ -32,8 +32,9 @@ public class LSMIndex {
         // 更新预写日志
         try {
             lock.writeLock().lock();
-            int lineLen = line.length() + 11;
-            line = String.format("%10d%s", lineLen, line);
+            int lineLen = line.length();
+            lineLen = String.valueOf(lineLen).length() + lineLen;
+            line = String.format("%d\u0000%s", lineLen, line);
             wal.writeToFile(line);
             lineOffset = offset;
             offset = offset + lineLen;
@@ -45,17 +46,17 @@ public class LSMIndex {
         }
         // 更新索引
         logger.debug(String.format("get key:%s, offset:%d", k, lineOffset));
-        cache.insertCache(k, lineOffset);
+        cache.insertCache(k, v);
     }
 
+    public String get(String key) {
+        String val = this.cache.getVal(key);
+        if (val != null) {
+            return val;
+        } else {
+            // todo 从文件中获取
 
-
-    public void printf() {
-        System.out.println(this.cache.getActiveCache());
-        int times = 0;
-        while (times < this.cache.immuCacheNum()) {
-            System.out.println(this.cache.getCache());
-            times++;
         }
+        return null;
     }
 }

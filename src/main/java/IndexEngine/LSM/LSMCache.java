@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import utils.ConfigLoader;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -14,16 +15,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class LSMCache {
     private Logger logger = Logger.getLogger(LSMCache.class);
 
-    private TreeMap<String, Long> activeMemtable = new TreeMap<>();
-    private LinkedList<TreeMap<String, Long>> immuMemtables = new LinkedList<>();
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private TreeMap<String, String> activeMemtable = new TreeMap<>();
+    private ConcurrentLinkedDeque<TreeMap<String, String>> immuMemtables = new ConcurrentLinkedDeque<>();
+    private ReentrantReadWriteLock activeLock = new ReentrantReadWriteLock();
     private long cnt = 0;
 
     // 接收写请求，线程安全
-    public void insertCache(String key, Long offset) {
+    public void insertCache(String key, String val) {
         try {
-            lock.writeLock().lock();
-            activeMemtable.put(key, offset);
+            activeLock.writeLock().lock();
+            activeMemtable.put(key, val);
             cnt++;
             if (cnt >= ConfigLoader.getInstance().getCacheSize()) {
                 immuMemtables.offer(activeMemtable);
@@ -33,19 +34,26 @@ public class LSMCache {
         } catch (Exception e) {
             logger.error("LSMCache insertCache error, err: " + e.getMessage());
         } finally {
-            lock.writeLock().unlock();
+            activeLock.writeLock().unlock();
         }
     }
 
     // 查cache流程
-    public Long getKeyOffset(String key) {
-        Long offset = this.activeMemtable.get(key);
-        if (offset != null) {
-            return offset;
+    public String getVal(String key) {
+        String val;
+        try {
+            activeLock.readLock().lock();
+            val = this.activeMemtable.get(key);
+            if (val != null) {
+                return val;
+            }
+        } finally {
+            activeLock.readLock().unlock();
         }
-        int tableCnt = this.immuMemtables.size();
-        for (int index = tableCnt - 1; index >= 0; index--) {
-            Long val = this.immuMemtables.get(index).get(key);
+        Iterator<TreeMap<String, String>> iterator = this.immuMemtables.descendingIterator();
+        while (iterator.hasNext()) {
+            TreeMap<String, String> node = iterator.next();
+            val = node.get(key);
             if (val != null) {
                 return val;
             }
@@ -53,17 +61,13 @@ public class LSMCache {
         return null;
     }
 
-    // 线程不安全
-    public TreeMap<String, Long> getCache() {
+    // 后台拉取full cache写入
+    public TreeMap<String, String> getCache() {
         return immuMemtables.poll();
     }
 
+    // 获取full cache数量
     public int immuCacheNum() {
         return immuMemtables.size();
     }
-
-    public TreeMap<String, Long> getActiveCache() {
-        return this.activeMemtable;
-    }
-
 }
