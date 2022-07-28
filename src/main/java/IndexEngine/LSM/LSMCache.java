@@ -5,7 +5,6 @@ import utils.ConfigLoader;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -13,11 +12,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 接收写请求时，会写到
  */
 public class LSMCache {
-    private Logger logger = Logger.getLogger(LSMCache.class);
+    private final Logger logger = Logger.getLogger(LSMCache.class);
 
     private TreeMap<String, String> activeMemtable = new TreeMap<>();
-    private ConcurrentLinkedDeque<TreeMap<String, String>> immuMemtables = new ConcurrentLinkedDeque<>();
-    private ReentrantReadWriteLock activeLock = new ReentrantReadWriteLock();
+    private final ConcurrentLinkedDeque<TreeMap<String, String>> immuMemtables = new ConcurrentLinkedDeque<>();
+    private final ReentrantReadWriteLock activeLock = new ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock immuLock = new ReentrantReadWriteLock();
     private long cnt = 0;
 
     // 接收写请求，线程安全
@@ -41,6 +41,7 @@ public class LSMCache {
     // 查cache流程
     public String getVal(String key) {
         String val;
+        // 活跃节点查找
         try {
             activeLock.readLock().lock();
             val = this.activeMemtable.get(key);
@@ -50,24 +51,40 @@ public class LSMCache {
         } finally {
             activeLock.readLock().unlock();
         }
-        Iterator<TreeMap<String, String>> iterator = this.immuMemtables.descendingIterator();
-        while (iterator.hasNext()) {
-            TreeMap<String, String> node = iterator.next();
-            val = node.get(key);
-            if (val != null) {
-                return val;
+        // 存量节点
+        try {
+            immuLock.readLock().lock();
+            Iterator<TreeMap<String, String>> iterator = this.immuMemtables.descendingIterator();
+            while (iterator.hasNext()) {
+                TreeMap<String, String> node = iterator.next();
+                val = node.get(key);
+                if (val != null) {
+                    return val;
+                }
             }
+            return null;
+        } finally {
+            immuLock.readLock().unlock();
         }
-        return null;
     }
 
     // 后台拉取full cache写入
     public TreeMap<String, String> getCache() {
-        return immuMemtables.poll();
+        try {
+            immuLock.writeLock().lock();
+            return immuMemtables.poll();
+        } finally {
+            immuLock.writeLock().unlock();
+        }
     }
 
     // 获取full cache数量
     public int immuCacheNum() {
-        return immuMemtables.size();
+        try {
+            immuLock.readLock().lock();
+            return immuMemtables.size();
+        } finally {
+            immuLock.readLock().unlock();
+        }
     }
 }

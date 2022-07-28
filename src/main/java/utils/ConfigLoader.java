@@ -7,6 +7,8 @@ import java.util.Properties;
 
 @Getter
 public class ConfigLoader {
+    private final String walFilePath;
+    private final String indexFilePath;
     private final String dataFilePath;
     private final Integer cacheSize;
     private final static ConfigLoader configLoader = new ConfigLoader();
@@ -21,7 +23,9 @@ public class ConfigLoader {
             e.printStackTrace();
         }
         // 初始化变量
-        dataFilePath = properties.getProperty("filepath");
+        walFilePath = properties.getProperty("walFilePath");
+        indexFilePath = properties.getProperty("indexFilePath");
+        dataFilePath = properties.getProperty("dataFilePath");
         cacheSize = Integer.parseInt(properties.getProperty("cacheSize", "10"));
     }
 
