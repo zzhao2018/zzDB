@@ -1,9 +1,12 @@
 import IndexEngine.LSM.LSMCache;
 import IndexEngine.LSM.LSMIndex;
 import org.junit.Test;
+import start.Entry;
 import storage.ToFile;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class testStart {
     @Test
@@ -39,6 +42,21 @@ public class testStart {
         System.out.println(lsmIndex.get("day"));
         System.out.println(lsmIndex.get("city"));
 
+    }
+
+    @Test
+    public void testLSMThread() {
+        TreeMap<String, String> nodes = new TreeMap<>();
+        nodes.put("a", "1");
+        nodes.put("c", "3");
+        nodes.put("k", "2");
+        nodes.put("z", "9");
+        nodes.put("b", "2");
+        nodes.put("d", "4");
+        for (Map.Entry<String, String> data : nodes.entrySet()) {
+            System.out.println(data.getKey());
+//            System.out.println(data.getValue());
+        }
     }
 }
 

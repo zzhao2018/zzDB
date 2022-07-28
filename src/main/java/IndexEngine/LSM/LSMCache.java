@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * LSMCache lsm树缓存
  * 接收写请求时，会写到
  */
+// TODO 优化锁粒度，优化红黑树与immutable结构
 public class LSMCache {
     private final Logger logger = Logger.getLogger(LSMCache.class);
 
@@ -68,13 +69,23 @@ public class LSMCache {
         }
     }
 
-    // 后台拉取full cache写入
-    public TreeMap<String, String> getCache() {
+    // 后台剔除节点
+    public void popCache() {
         try {
             immuLock.writeLock().lock();
-            return immuMemtables.poll();
+            immuMemtables.poll();
         } finally {
             immuLock.writeLock().unlock();
+        }
+    }
+
+    // 后台取第一个节点数据
+    public TreeMap<String, String> peekCache() {
+        try {
+            immuLock.readLock().lock();
+            return immuMemtables.peek();
+        } finally {
+            immuLock.readLock().unlock();
         }
     }
 

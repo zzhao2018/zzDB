@@ -25,7 +25,7 @@ public class LSMIndex {
         try {
             lock.writeLock().lock();
             line = String.format("%s\n", line);
-            wal.writeToFile(line);
+            wal.writeToFile(line, true);
         } catch (Exception e) {
             logger.error("LSMIndex set error, err: " + e.getMessage());
             throw new RuntimeException(e);

@@ -11,9 +11,11 @@ public class ConfigLoader {
     private final String indexFilePath;
     private final String dataFilePath;
     private final Integer cacheSize;
+    private final Integer interval;
     private final static ConfigLoader configLoader = new ConfigLoader();
 
     private ConfigLoader() {
+        int innerInterval;
         Properties properties = new Properties();
         InputStream in = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties");
         System.out.println(in);
@@ -27,6 +29,11 @@ public class ConfigLoader {
         indexFilePath = properties.getProperty("indexFilePath");
         dataFilePath = properties.getProperty("dataFilePath");
         cacheSize = Integer.parseInt(properties.getProperty("cacheSize", "10"));
+        innerInterval = Integer.parseInt(properties.getProperty("interval", "3"));
+        if (innerInterval <= 0) {
+            innerInterval = 3;
+        }
+        interval = innerInterval;
     }
 
     public static ConfigLoader getInstance() {

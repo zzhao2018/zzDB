@@ -1,5 +1,7 @@
 package storage;
 
+import IndexEngine.LSM.LSMCache;
+import org.apache.log4j.Logger;
 import utils.ConfigLoader;
 
 import java.io.*;
@@ -9,10 +11,17 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.TreeMap;
 
+/**
+ * 写文件
+ */
+// TODO 目前明文写入，后续优化反向 - 二进制写入，NIO
 public class ToFile {
-    BufferedWriter writer;
+    private final Logger logger = Logger.getLogger(ToFile.class);
+    private final BufferedWriter writer;
+    private int buffSize = 0;
+
 
     public ToFile(String path) throws IOException {
         writer = Files.newBufferedWriter(
@@ -21,24 +30,30 @@ public class ToFile {
         );
     }
 
-    public void writeToFile(String line) {
+    // 写入文件
+    public void writeToFile(String line, boolean imFlush) {
         try {
+            this.buffSize++;
             writer.write(line);
-            writer.flush();
+            if (imFlush) {
+                writer.flush();
+            } else if (this.buffSize > 100) {
+                writer.flush();
+                this.buffSize = 0;
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("writeToFile error, err: " + e.getMessage());
         }
     }
 
-    public void writeToFile(ConcurrentLinkedQueue<String> lines) {
+    public void flush() {
         try {
-            writer.write(String.join("\n", lines));
-            writer.write("\n");
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+            this.writer.flush();
+        } catch (Exception e) {
+            logger.error("flush error, err: " + e.getMessage());
         }
     }
+
 
     public List<String> readFromFile() {
         List<String> lines = new ArrayList<>();
