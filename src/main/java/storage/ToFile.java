@@ -1,5 +1,6 @@
 package storage;
 
+import IndexEngine.LSM.LSMCache;
 import org.apache.log4j.Logger;
 import utils.ConfigLoader;
 
@@ -8,9 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
 
 /**
  * 写文件
@@ -51,23 +49,6 @@ public class ToFile {
         } catch (Exception e) {
             logger.error("flush error, err: " + e.getMessage());
         }
-    }
-
-
-    public List<String> readFromFile() {
-        List<String> lines = new ArrayList<>();
-        try {
-            File file = new File(ConfigLoader.getInstance().getDataFilePath());
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return lines;
     }
 
     public void close() throws IOException {

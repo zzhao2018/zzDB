@@ -12,6 +12,9 @@ public class ConfigLoader {
     private final String dataFilePath;
     private final Integer cacheSize;
     private final Integer interval;
+    private final Integer flushDiskInterval;
+    private final Integer indexLruCacheSize;
+    private final Float indexLruCacheLoadFactor;
     private final static ConfigLoader configLoader = new ConfigLoader();
 
     private ConfigLoader() {
@@ -28,6 +31,9 @@ public class ConfigLoader {
         indexFilePath = properties.getProperty("indexFilePath");
         dataFilePath = properties.getProperty("dataFilePath");
         cacheSize = Integer.parseInt(properties.getProperty("cacheSize", "10"));
+        flushDiskInterval = Integer.parseInt(properties.getProperty("flushDiskInterval", "1000"));
+        indexLruCacheSize = Integer.parseInt(properties.getProperty("indexLruCacheSize", "100"));
+        indexLruCacheLoadFactor = Float.parseFloat(properties.getProperty("indexLruCacheLoadFactor", "0.75"));
         innerInterval = Integer.parseInt(properties.getProperty("interval", "3"));
         if (innerInterval <= 0) {
             innerInterval = 3;
