@@ -30,8 +30,8 @@ public class testStart {
     }
 
     @Test
-    public void testLSMIndex() throws IOException {
-        LSMIndex lsmIndex = new LSMIndex();
+    public void testLSMIndex() throws InterruptedException {
+        LSMIndex lsmIndex = LSMIndex.getInstance();
         lsmIndex.set("name", "zzh");
         lsmIndex.set("age", "12");
         lsmIndex.set("addr", "earth");
@@ -41,7 +41,14 @@ public class testStart {
         System.out.println(lsmIndex.get("age"));
         System.out.println(lsmIndex.get("day"));
         System.out.println(lsmIndex.get("city"));
-
+        System.out.println(lsmIndex.get("sex"));
+        Thread.sleep(5000);
+        System.out.println("=================");
+        System.out.println(lsmIndex.get("name"));
+        System.out.println(lsmIndex.get("age"));
+        System.out.println(lsmIndex.get("day"));
+        System.out.println(lsmIndex.get("city"));
+        System.out.println(lsmIndex.get("sex"));
     }
 
     @Test
@@ -58,5 +65,7 @@ public class testStart {
 //            System.out.println(data.getValue());
         }
     }
+
+
 }
 

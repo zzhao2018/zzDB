@@ -18,7 +18,6 @@ public class ConfigLoader {
         int innerInterval;
         Properties properties = new Properties();
         InputStream in = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties");
-        System.out.println(in);
         try {
             properties.load(in);
         } catch (IOException e) {

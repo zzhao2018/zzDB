@@ -1,6 +1,5 @@
 package storage;
 
-import IndexEngine.LSM.LSMCache;
 import org.apache.log4j.Logger;
 import utils.ConfigLoader;
 
