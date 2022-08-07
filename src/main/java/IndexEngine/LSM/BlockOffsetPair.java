@@ -11,4 +11,12 @@ public class BlockOffsetPair {
         this.block = block;
         this.offset = offset;
     }
+
+    @Override
+    public String toString() {
+        return "BlockOffsetPair{" +
+                "offset=" + offset +
+                ", block=" + block +
+                '}';
+    }
 }

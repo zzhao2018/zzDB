@@ -2,9 +2,11 @@ package IndexEngine.LSM;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LRUCache<K, V> {
     private LinkedHashMap<K, V> cache;
+    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public LRUCache(int cacheSize, float loadFactor) {
         int capacity = (int) Math.ceil(cacheSize / loadFactor);
@@ -17,11 +19,21 @@ public class LRUCache<K, V> {
     }
 
     public void set(K key, V val) {
-        cache.put(key, val);
+        try {
+            this.lock.writeLock().lock();
+            cache.put(key, val);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 
     public V get(K key) {
-        return cache.get(key);
+        try {
+            this.lock.readLock().lock();
+            return cache.get(key);
+        } finally {
+            this.lock.readLock().unlock();
+        }
     }
 
 }

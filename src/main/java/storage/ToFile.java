@@ -16,44 +16,26 @@ import java.nio.file.StandardOpenOption;
 // TODO 目前明文写入，后续优化反向 - 二进制写入，NIO
 public class ToFile {
     private final Logger logger = Logger.getLogger(ToFile.class);
-    private final BufferedWriter writer;
-    private int buffSize = 0;
+    private final BufferedOutputStream writer;
 
 
-    public ToFile(String path) throws IOException {
-        writer = Files.newBufferedWriter(
-                Paths.get(path),
-                StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE
-        );
+    public ToFile(String path, int buffSize) throws IOException {
+        writer = new BufferedOutputStream(new FileOutputStream(path), buffSize);
     }
 
     // 写入文件
-    public void writeToFile(String line, boolean imFlush) {
+    public void writeToFile(byte[] line, boolean imFlush) {
         try {
-            this.buffSize++;
             writer.write(line);
             if (imFlush) {
                 writer.flush();
-            } else if (this.buffSize > 100) {
-                writer.flush();
-                this.buffSize = 0;
             }
         } catch (IOException e) {
             logger.error("writeToFile error, err: " + e.getMessage());
         }
     }
 
-    public void flush() {
-        try {
-            this.writer.flush();
-        } catch (Exception e) {
-            logger.error("flush error, err: " + e.getMessage());
-        }
-    }
-
     public void close() throws IOException {
-        if (writer != null) {
-            writer.close();
-        }
+        writer.close();
     }
 }

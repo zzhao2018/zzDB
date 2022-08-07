@@ -1,5 +1,5 @@
 import IndexEngine.LSM.LSMCache;
-import IndexEngine.LSM.LSMIndex;
+import IndexEngine.LSM.LSMEngine;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,24 +29,24 @@ public class testStart {
 
     @Test
     public void testLSMIndex() throws InterruptedException {
-        LSMIndex lsmIndex = LSMIndex.getInstance();
-        lsmIndex.set("name", "zzh");
-        lsmIndex.set("age", "12");
-        lsmIndex.set("addr", "earth");
-        lsmIndex.set("city", "sum");
+        LSMEngine lsmIndex = LSMEngine.getInstance();
+        lsmIndex.set("name", "测试");
+        lsmIndex.set("age", "123456789101112");
+        lsmIndex.set("addr", "地球");
+        lsmIndex.set("city", "太阳");
+        lsmIndex.set("name", "新名字");
         lsmIndex.set("sex", "man");
-        System.out.println(lsmIndex.get("name"));
-        System.out.println(lsmIndex.get("age"));
-        System.out.println(lsmIndex.get("day"));
-        System.out.println(lsmIndex.get("city"));
-        System.out.println(lsmIndex.get("sex"));
+        lsmIndex.set("sex", "woman");
+        lsmIndex.set("addr", "太阳系");
+        lsmIndex.set("city", "银河系");
         Thread.sleep(5000);
         System.out.println("=================");
-        System.out.println(lsmIndex.get("name"));
-        System.out.println(lsmIndex.get("age"));
-        System.out.println(lsmIndex.get("day"));
-        System.out.println(lsmIndex.get("city"));
-        System.out.println(lsmIndex.get("sex"));
+        System.out.println("name:" + lsmIndex.get("name"));
+        System.out.println("age:" + lsmIndex.get("age"));
+        System.out.println("addr:" + lsmIndex.get("addr"));
+        System.out.println("city:" + lsmIndex.get("city"));
+        System.out.println("sex:" + lsmIndex.get("sex"));
+        System.out.println("sex:" + lsmIndex.get("test"));
     }
 
     @Test
