@@ -39,7 +39,12 @@ public class LSMEngine {
         thread.start();
     }
 
-    // TODO 后续优化\n问题
+    /**
+     * TODO 1.优化\n问题  2.优化锁粒度为行锁
+     *
+     * @param k 键
+     * @param v 值
+     */
     public void set(String k, String v) {
         String line = k + "\u0000" + v + "\n";
         // 更新预写日志
@@ -72,9 +77,14 @@ public class LSMEngine {
         return null;
     }
 
+    // TODO 删除
+    public void delete(String key) {
+
+    }
+
 
     /**
-     * 获取key对应的val
+     * 从文件中获取数据，
      *
      * @param key
      * @return

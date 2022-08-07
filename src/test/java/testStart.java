@@ -46,24 +46,7 @@ public class testStart {
         System.out.println("addr:" + lsmIndex.get("addr"));
         System.out.println("city:" + lsmIndex.get("city"));
         System.out.println("sex:" + lsmIndex.get("sex"));
-        System.out.println("sex:" + lsmIndex.get("test"));
+        System.out.println("test:" + lsmIndex.get("test"));
     }
-
-    @Test
-    public void testLSMThread() {
-        TreeMap<String, String> nodes = new TreeMap<>();
-        nodes.put("a", "1");
-        nodes.put("c", "3");
-        nodes.put("k", "2");
-        nodes.put("z", "9");
-        nodes.put("b", "2");
-        nodes.put("d", "4");
-        for (Map.Entry<String, String> data : nodes.entrySet()) {
-            System.out.println(data.getKey());
-//            System.out.println(data.getValue());
-        }
-    }
-
-
 }
 
